@@ -45,6 +45,11 @@ if not TWITCH_PASSWORD:
         "  TARGET_CHANNEL=Yugi2x"
     )
 
+# Ensure password has oauth: prefix if it doesn't already
+if not TWITCH_PASSWORD.startswith("oauth:"):
+    print("⚠️  Warning: TWITCH_PASSWORD should start with 'oauth:'. Adding prefix...")
+    TWITCH_PASSWORD = "oauth:" + TWITCH_PASSWORD
+
 # Create miner instance
 twitch_miner = TwitchChannelPointsMiner(
     username=TWITCH_USERNAME,
@@ -59,7 +64,7 @@ twitch_miner = TwitchChannelPointsMiner(
         save=True,
         console_level=logging.INFO,
         file_level=logging.DEBUG,
-        emoji=True,
+        emoji=False,  # Disabled - avoids emoji library compatibility issues
         less=False,
         colored=True,
         color_palette=ColorPalette(
