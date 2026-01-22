@@ -2,6 +2,15 @@
 
 import logging
 import os
+
+# Auto-load .env file if it exists (for running without Docker)
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+    print("✅ Loaded .env file")
+except ImportError:
+    pass  # dotenv not installed, use environment variables directly
+
 from colorama import Fore
 from TwitchChannelPointsMiner import TwitchChannelPointsMiner
 from TwitchChannelPointsMiner.logger import LoggerSettings, ColorPalette
@@ -21,27 +30,26 @@ from TwitchChannelPointsMiner.classes.entities.Streamer import (
 
 # Load credentials from environment variables
 TWITCH_USERNAME = os.getenv("TWITCH_USERNAME", "").strip()
-TWITCH_PASSWORD = os.getenv("TWITCH_PASSWORD", "").strip()  # Can be: oauth:..., or p3d500lt..., or password
+TWITCH_PASSWORD = os.getenv("TWITCH_PASSWORD", "").strip()  # Can be: oauth:..., or access token, or password
 TARGET_CHANNEL = os.getenv("TARGET_CHANNEL", "Yugi2x").strip()
 
 # Validate configuration
 if not TWITCH_USERNAME:
     raise ValueError(
-        "❌ ERROR: TWITCH_USERNAME is not set in environment variables. "
-        "Please set it in your .env file."
+        "❌ ERROR: TWITCH_USERNAME is not set.\n"
+        "Create a .env file with:\n"
+        "  TWITCH_USERNAME=your_username\n"
+        "  TWITCH_PASSWORD=your_token\n"
+        "  TARGET_CHANNEL=Yugi2x"
     )
 
 if not TWITCH_PASSWORD:
     raise ValueError(
-        "❌ ERROR: TWITCH_PASSWORD (OAuth token or access token or password) is not set in environment variables. "
-        "Please set it in your .env file."
-    )
-
-# Validate username format
-if not TWITCH_USERNAME.isalnum() and "_" not in TWITCH_USERNAME:
-    raise ValueError(
-        f"❌ ERROR: Invalid Twitch username format: '{TWITCH_USERNAME}'. "
-        "Username should only contain letters, numbers, and underscores."
+        "❌ ERROR: TWITCH_PASSWORD is not set.\n"
+        "Create a .env file with:\n"
+        "  TWITCH_USERNAME=your_username\n"
+        "  TWITCH_PASSWORD=your_token\n"
+        "  TARGET_CHANNEL=Yugi2x"
     )
 
 twitch_miner = TwitchChannelPointsMiner(
@@ -108,5 +116,4 @@ if __name__ == "__main__":
         logging.info("\n\n🛑 Bot stopped by user (Ctrl+C)")
     except Exception as e:
         logging.error(f"\n❌ Fatal error: {e}")
-        logging.error("💡 Check logs for more details: docker compose logs -f")
         raise
