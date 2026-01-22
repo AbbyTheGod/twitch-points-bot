@@ -21,7 +21,7 @@ from TwitchChannelPointsMiner.classes.entities.Streamer import (
 
 # Load credentials from environment variables
 TWITCH_USERNAME = os.getenv("TWITCH_USERNAME", "").strip()
-TWITCH_PASSWORD = os.getenv("TWITCH_PASSWORD", "").strip()  # This is your OAuth token
+TWITCH_PASSWORD = os.getenv("TWITCH_PASSWORD", "").strip()  # Can be: oauth:..., or p3d500lt..., or password
 TARGET_CHANNEL = os.getenv("TARGET_CHANNEL", "Yugi2x").strip()
 
 # Validate configuration
@@ -33,17 +33,11 @@ if not TWITCH_USERNAME:
 
 if not TWITCH_PASSWORD:
     raise ValueError(
-        "❌ ERROR: TWITCH_PASSWORD (OAuth token) is not set in environment variables. "
+        "❌ ERROR: TWITCH_PASSWORD (OAuth token or access token or password) is not set in environment variables. "
         "Please set it in your .env file."
     )
 
-# Validate OAuth token format
-if not TWITCH_PASSWORD.startswith("oauth:"):
-    logging.warning(
-        "⚠️  WARNING: Your OAuth token should start with 'oauth:' "
-        "Current token may not work correctly."
-    )
-
+# Validate username format
 if not TWITCH_USERNAME.isalnum() and "_" not in TWITCH_USERNAME:
     raise ValueError(
         f"❌ ERROR: Invalid Twitch username format: '{TWITCH_USERNAME}'. "
@@ -52,7 +46,7 @@ if not TWITCH_USERNAME.isalnum() and "_" not in TWITCH_USERNAME:
 
 twitch_miner = TwitchChannelPointsMiner(
     username=TWITCH_USERNAME,
-    password=TWITCH_PASSWORD,
+    password=TWITCH_PASSWORD,  # Works with: OAuth tokens, access tokens, or passwords
     claim_drops_startup=False,  # Claim drops from inventory on startup
     priority=[  # Priority order for watching
         Priority.STREAK,  # Catch watch streak bonus (+450 points)
