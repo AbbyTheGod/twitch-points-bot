@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  twitch-points-bot:
+    image: rdavidoff/twitch-channel-points-miner-v2:latest
+    container_name: twitch-points-bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      # Persist logs on the host
+      - ./logs:/app/logs
+      # Mount your custom run.py
+      - ./run.py:/app/run.py:ro
+    environment:
+      # Override any environment variables needed
+      - TZ=UTC  # Set your timezone
+    # Optional: Limit resources
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '0.5'
+    #       memory: 512M
+    #     reservations:
+    #       memory: 256M
+
+# Persist logs on host
+volumes:
+  logs:
